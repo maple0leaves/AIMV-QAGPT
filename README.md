@@ -32,6 +32,10 @@ docker compose up --build
 
 如需进行本地开发调试，请参考 [启动命令速查](docs/STARTUP_COMMANDS.md)。
 
+## 参考
+
+[openwebui](https://github.com/open-webui/open-webui)
+
 ## 许可证
 
 本项目基于 [BSD-3-Clause License](LICENSE) 开源。
