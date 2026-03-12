@@ -40,3 +40,9 @@ docker compose up --build
 
 本项目基于 [BSD-3-Clause License](LICENSE) 开源。
 
+## 获奖
+
+### 本项目获得第六届TE Connectivity AI Cup 全球二等奖
+
+![](./static/prize.png)
+
