@@ -1,6 +1,8 @@
 # AIMVQAGPT
 
 **AIMVQAGPT** (AI Machine Vision Q&A GPT ) 是一套企业级本地化 RAG 智能问答系统， 目的是解决TE Connectivity 的AIMV 技术文档查询依赖人工翻阅（平均 30 分钟/次），跨部门技术支持响应超 1 天，且受数据合规与私有化部署的硬性约束等问题。
+**功能演示**移步个人B站视频：[AIMVQAGPT系统演示](https://www.bilibili.com/video/BV1dd9KB2EL6/)
+
 
 ## 对话请求处理流程(后端)
 
@@ -60,7 +62,7 @@
 ```
 
 另有一份可交互排版的**可视化架构页**：[project_architecture.html](./project_architecture.html)。在 GitHub 仓库里点开该文件会看到 HTML 源码；下载到本地后双击用浏览器打开，或使用 Raw 链接在浏览器中打开即可正常渲染。
-这也有[项目目录](project_structure.md)
+也可查看[项目目录](project_structure.md)
 
 ## 快速开始
 
@@ -78,7 +80,6 @@ docker compose up --build
 
 ## 主要功能
 
-**功能演示**移步个人B站视频：[AIMVQAGPT系统演示](https://www.bilibili.com/video/BV1dd9KB2EL6/)
 
 - **Ollama / OpenAI API 集成**：支持 Ollama 本地模型及 OpenAI 兼容 API
 - **RAG 检索增强生成**：支持上传文档并在对话中引用
