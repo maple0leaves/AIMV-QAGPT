@@ -78,7 +78,7 @@ docker compose up --build
 
 ## 主要功能
 
-**功能演示**移步个人B站视频：[AIMVQAGPT功能演示]()
+**功能演示**移步个人B站视频：[AIMVQAGPT系统演示](https://www.bilibili.com/video/BV1dd9KB2EL6/)
 
 - **Ollama / OpenAI API 集成**：支持 Ollama 本地模型及 OpenAI 兼容 API
 - **RAG 检索增强生成**：支持上传文档并在对话中引用
