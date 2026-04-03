@@ -1,7 +1,7 @@
 # AIMVQAGPT
 
 **AIMVQAGPT** (AI Machine Vision Q&A GPT ) 是一套企业级本地化 RAG 智能问答系统， 目的是解决TE Connectivity 的AIMV 技术文档查询依赖人工翻阅（平均 30 分钟/次），跨部门技术支持响应超 1 天，且受数据合规与私有化部署的硬性约束等问题。
-**功能演示**移步个人B站视频：[AIMVQAGPT系统演示](https://www.bilibili.com/video/BV1dd9KB2EL6/)
+**系统演示**移步个人B站视频：[AIMVQAGPT系统演示](https://www.bilibili.com/video/BV1dd9KB2EL6/)
 
 
 ## 对话请求处理流程(后端)
