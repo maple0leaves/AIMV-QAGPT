@@ -1045,7 +1045,8 @@ async def chat_completion(
 
         request.state.metadata = metadata
         form_data["metadata"] = metadata
-
+        
+        # RAG、tools calling、web_search
         form_data, metadata, events = await process_chat_payload(
             request, form_data, metadata, user, model
         )
@@ -1058,8 +1059,10 @@ async def chat_completion(
         )
 
     try:
+        # 调用LLM 
         response = await chat_completion_handler(request, form_data, user)
-
+        
+        # 后处理
         return await process_chat_response(
             request, response, form_data, user, events, metadata, tasks
         )

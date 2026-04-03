@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIMV-QAGPT 项目架构图</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: #0f1117;
+    color: #e2e8f0;
+    min-height: 100vh;
+    padding: 32px;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #60a5fa, #a78bfa, #34d399);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .subtitle {
+    text-align: center;
+    color: #64748b;
+    font-size: 13px;
+    margin-bottom: 36px;
+  }
+
+  /* ===== 架构流图 ===== */
+  .arch-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 48px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+  .arch-layer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    min-width: 130px;
+  }
+  .arch-label {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .arch-box {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 12px 16px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    width: 130px;
+    transition: all 0.2s;
+    cursor: default;
+  }
+  .arch-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .arch-box .icon { font-size: 20px; display: block; margin-bottom: 4px; }
+  .arch-box .name { font-size: 12px; }
+  .arch-box .tech { font-size: 10px; color: #94a3b8; margin-top: 2px; }
+
+  .box-blue   { border-color: #3b82f6; background: #1e3a5f; }
+  .box-green  { border-color: #10b981; background: #1a3a2e; }
+  .box-purple { border-color: #8b5cf6; background: #2d1f4e; }
+  .box-orange { border-color: #f59e0b; background: #3a2a10; }
+  .box-red    { border-color: #ef4444; background: #3a1a1a; }
+  .box-teal   { border-color: #14b8a6; background: #1a3535; }
+  .box-gray   { border-color: #475569; background: #1e293b; }
+
+  .arch-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 4px;
+    color: #475569;
+  }
+  .arch-arrow svg { width: 32px; height: 20px; }
+  .arch-arrow .arrow-label { font-size: 9px; color: #475569; margin-top: 2px; white-space: nowrap; }
+
+  /* ===== 目录树 ===== */
+  .trees-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+  .tree-panel {
+    background: #141920;
+    border: 1px solid #1e293b;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .tree-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    font-weight: 700;
+    font-size: 13px;
+    border-bottom: 1px solid #1e293b;
+  }
+  .tree-header .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .tree-body { padding: 16px 18px; font-size: 12px; line-height: 2; font-family: 'Consolas', 'Courier New', monospace; }
+
+  .tree-line { display: flex; align-items: baseline; gap: 4px; }
+  .tree-line .prefix { color: #334155; user-select: none; }
+  .tree-line .folder { color: #60a5fa; font-weight: 600; }
+  .tree-line .file   { color: #94a3b8; }
+  .tree-line .badge  {
+    font-size: 9px; padding: 1px 6px; border-radius: 4px;
+    font-family: sans-serif; font-weight: 600; margin-left: 6px;
+  }
+  .badge-core    { background: #1e3a5f; color: #60a5fa; }
+  .badge-key     { background: #2d1f4e; color: #a78bfa; }
+  .badge-rag     { background: #1a3a2e; color: #34d399; }
+  .badge-api     { background: #3a2a10; color: #f59e0b; }
+  .tree-line .comment { color: #3d5168; font-size: 10px; margin-left: 8px; }
+
+  /* ===== 技术栈卡片 ===== */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+  .stack-card {
+    background: #141920;
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+    padding: 14px 10px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .stack-card:hover {
+    transform: translateY(-3px);
+    border-color: #334155;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  }
+  .stack-card .icon { font-size: 22px; margin-bottom: 6px; }
+  .stack-card .name { font-size: 12px; font-weight: 600; color: #e2e8f0; }
+  .stack-card .role { font-size: 10px; color: #64748b; margin-top: 2px; }
+
+  /* ===== 数据流 ===== */
+  .dataflow {
+    background: #141920;
+    border: 1px solid #1e293b;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 40px;
+  }
+  .dataflow h2 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .flow-node {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .flow-arrow {
+    color: #475569;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .flow-label {
+    font-size: 10px;
+    color: #64748b;
+    padding: 3px 8px;
+    background: #0f1117;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .fn-blue   { border-color: #3b82f6; color: #60a5fa; }
+  .fn-green  { border-color: #10b981; color: #34d399; }
+  .fn-purple { border-color: #8b5cf6; color: #a78bfa; }
+  .fn-orange { border-color: #f59e0b; color: #fbbf24; }
+  .fn-red    { border-color: #ef4444; color: #f87171; }
+  .fn-teal   { border-color: #14b8a6; color: #2dd4bf; }
+
+  section-title {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #475569;
+    margin-bottom: 14px;
+  }
+
+  .deploy-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .deploy-badge {
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    border: 1px solid;
+  }
+</style>
+</head>
+<body>
+
+<h1>AIMV-QAGPT 项目架构图</h1>
+<p class="subtitle">基于 Open WebUI 二次开发的企业级本地化 RAG 智能问答系统</p>
+
+<!-- ===== 技术栈 ===== -->
+<section-title>技术栈</section-title>
+<div class="stack-grid">
+  <div class="stack-card">
+    <div class="icon">⚡</div>
+    <div class="name">SvelteKit</div>
+    <div class="role">前端框架</div>
+  </div>
+  <div class="stack-card">
+    <div class="icon">🎨</div>
+    <div class="name">TailwindCSS</div>
+    <div class="role">UI 样式</div>
+  </div>
+  <div class="stack-card">
+    <div class="icon">🐍</div>
+    <div class="name">FastAPI</div>
+    <div class="role">后端 API</div>
+  </div>
+  <div class="stack-card">
+    <div class="icon">🔍</div>
+    <div class="name">RAG 检索</div>
+    <div class="role">增强生成</div>
+  </div>
+  <div class="stack-card">
+    <div class="icon">🦙</div>
+    <div class="name">Ollama</div>
+    <div class="role">本地 LLM</div>
+  </div>
+  <div class="stack-card">
+    <div class="icon">🐳</div>
+    <div class="name">Docker</div>
+    <div class="role">容器部署</div>
+  </div>
+</div>
+
+<!-- ===== 架构流图 ===== -->
+<section-title>系统分层架构</section-title>
+<div class="arch-flow" style="margin-bottom: 40px;">
+
+  <div class="arch-layer">
+    <div class="arch-label">用户层</div>
+    <div class="arch-box box-gray">
+      <span class="icon">🌐</span>
+      <span class="name">浏览器 / PWA</span>
+    </div>
+  </div>
+
+  <div class="arch-arrow">
+    <svg viewBox="0 0 40 20"><path d="M0 10 L32 10 M28 5 L38 10 L28 15" stroke="#475569" stroke-width="1.5" fill="none"/></svg>
+    <div class="arrow-label">HTTP/WS</div>
+  </div>
+
+  <div class="arch-layer">
+    <div class="arch-label">代理层</div>
+    <div class="arch-box box-gray">
+      <span class="icon">🔀</span>
+      <span class="name">Caddy</span>
+      <span class="tech">反向代理</span>
+    </div>
+  </div>
+
+  <div class="arch-arrow">
+    <svg viewBox="0 0 40 20"><path d="M0 10 L32 10 M28 5 L38 10 L28 15" stroke="#475569" stroke-width="1.5" fill="none"/></svg>
+  </div>
+
+  <div class="arch-layer">
+    <div class="arch-label">前端层</div>
+    <div class="arch-box box-blue">
+      <span class="icon">⚡</span>
+      <span class="name">SvelteKit</span>
+      <span class="tech">Vite + TS</span>
+    </div>
+  </div>
+
+  <div class="arch-arrow">
+    <svg viewBox="0 0 40 20"><path d="M0 10 L32 10 M28 5 L38 10 L28 15" stroke="#475569" stroke-width="1.5" fill="none"/></svg>
+    <div class="arrow-label">REST / WS</div>
+  </div>
+
+  <div class="arch-layer">
+    <div class="arch-label">后端层</div>
+    <div class="arch-box box-purple">
+      <span class="icon">🐍</span>
+      <span class="name">FastAPI</span>
+      <span class="tech">Python</span>
+    </div>
+  </div>
+
+  <div class="arch-arrow">
+    <svg viewBox="0 0 40 20"><path d="M0 10 L32 10 M28 5 L38 10 L28 15" stroke="#475569" stroke-width="1.5" fill="none"/></svg>
+  </div>
+
+  <div class="arch-layer">
+    <div class="arch-label">数据层</div>
+    <div class="arch-box box-teal">
+      <span class="icon">🗄️</span>
+      <span class="name">SQLAlchemy</span>
+      <span class="tech">ORM + Alembic</span>
+    </div>
+  </div>
+
+  <div class="arch-arrow">
+    <svg viewBox="0 0 40 20"><path d="M0 10 L32 10 M28 5 L38 10 L28 15" stroke="#475569" stroke-width="1.5" fill="none"/></svg>
+  </div>
+
+  <div class="arch-layer">
+    <div class="arch-label">模型层</div>
+    <div class="arch-box box-green">
+      <span class="icon">🦙</span>
+      <span class="name">Ollama</span>
+      <span class="tech">本地 LLM</span>
+    </div>
+    <div class="arch-box box-orange" style="margin-top:6px;">
+      <span class="icon">✨</span>
+      <span class="name">OpenAI API</span>
+      <span class="tech">云端模型</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== 目录树 ===== -->
+<section-title style="display:block;margin-bottom:14px;">目录结构</section-title>
+<div class="trees-grid">
+
+  <!-- 后端 -->
+  <div class="tree-panel">
+    <div class="tree-header" style="background:#1a2035;">
+      <div class="dot" style="background:#3b82f6;"></div>
+      🐍 backend / open_webui/
+    </div>
+    <div class="tree-body">
+      <div class="tree-line"><span class="prefix">├─</span><span class="folder">📂 routers/</span><span class="badge badge-api">API路由</span></div>
+      <div class="tree-line"><span class="prefix">│  ├─</span><span class="file">chats.py</span><span class="comment">// 对话管理</span></div>
+      <div class="tree-line"><span class="prefix">│  ├─</span><span class="file">models.py</span><span class="comment">// 模型管理</span></div>
+      <div class="tree-line"><span class="prefix">│  ├─</span><span class="file">files.py</span><span class="comment">// 文件上传</span></div>
+      <div class="tree-line"><span class="prefix">│  └─</span><span class="file">retrieval.py</span><span class="comment">// RAG接口</span></div>
+      <div class="tree-line"><span class="prefix">├─</span><span class="folder">📂 models/</span><span class="badge badge-core">ORM模型</span></div>
+      <div class="tree-line"><span class="prefix">├─</span><span class="folder">📂 retrieval/</span><span class="badge badge-rag">RAG核心</span></div>
+      <div class="tree-line"><span class="prefix">│  ├─</span><span class="file">vector_store/</span><span class="comment">// 向量库</span></div>
+      <div class="tree-line"><span class="prefix">│  └─</span><span class="file">loaders/</span><span class="comment">// 文档加载</span></div>
+      <div class="tree-line"><span class="prefix">├─</span><span class="folder">📂 socket/</span><span class="badge badge-key">WebSocket</span></div>
+      <div class="tree-line"><span class="prefix">├─</span><span class="folder">📂 utils/</span></div>
+      <div class="tree-line"><span class="prefix">├─</span><span class="folder">📂 migrations/</span></div>
+      <div class="tree-line"><span class="prefix">├─</span><span class="file">main.py</span><span class="badge badge-core">入口</span></div>
+      <div class="tree-line"><span class="prefix">├─</span><span class="file">config.py</span><span class="badge badge-core">配置</span></div>
+      <div class="tree-line"><span class="prefix">├─</span><span class="file">functions.py</span><span class="badge badge-key">Function Call</span></div>
+      <div class="tree-line"><span class="prefix">└─</span><span class="file">tasks.py</span><span class="comment">// 后台任务</span></div>
+    </div>
+  </div>
+
+  <!-- 前端 -->
+  <div class="tree-panel">
+    <div class="tree-header" style="background:#1a2a20;">
+      <div class="dot" style="background:#10b981;"></div>
+      ⚡ src/
+    </div>
+    <div class="tree-body">
+      <div class="tree-line"><span class="prefix">├─</span><span class="folder">📂 routes/</span><span class="badge badge-api">页面路由</span></div>
+      <div class="tree-line"><span class="prefix">│  ├─</span><span class="file">+layout.svelte</span><span class="comment">// 全局布局</span></div>
+      <div class="tree-line"><span class="prefix">│  └─</span><span class="file">chat/</span><span class="comment">// 聊天页面</span></div>
+      <div class="tree-line"><span class="prefix">├─</span><span class="folder">📂 lib/</span></div>
+      <div class="tree-line"><span class="prefix">│  ├─</span><span class="folder">📂 components/</span><span class="badge badge-core">UI组件</span></div>
+      <div class="tree-line"><span class="prefix">│  │  ├─</span><span class="file">chat/</span><span class="comment">// 聊天组件</span></div>
+      <div class="tree-line"><span class="prefix">│  │  └─</span><span class="file">common/</span><span class="comment">// 通用组件</span></div>
+      <div class="tree-line"><span class="prefix">│  ├─</span><span class="folder">📂 apis/</span><span class="badge badge-api">请求封装</span></div>
+      <div class="tree-line"><span class="prefix">│  ├─</span><span class="folder">📂 stores/</span><span class="badge badge-key">状态管理</span></div>
+      <div class="tree-line"><span class="prefix">│  ├─</span><span class="folder">📂 i18n/</span><span class="comment">// 多语言</span></div>
+      <div class="tree-line"><span class="prefix">│  ├─</span><span class="folder">📂 utils/</span></div>
+      <div class="tree-line"><span class="prefix">│  ├─</span><span class="folder">📂 pyodide/</span><span class="comment">// 浏览器Python</span></div>
+      <div class="tree-line"><span class="prefix">│  └─</span><span class="folder">📂 workers/</span><span class="comment">// Web Worker</span></div>
+      <div class="tree-line"><span class="prefix">├─</span><span class="file">app.html</span><span class="badge badge-core">入口</span></div>
+      <div class="tree-line"><span class="prefix">└─</span><span class="file">app.css</span><span class="comment">// 全局样式</span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== 数据流 ===== -->
+<div class="dataflow">
+  <h2>📡 核心请求数据流</h2>
+
+  <div class="flow-row">
+    <div class="flow-node fn-blue">👤 用户输入</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node fn-blue">Svelte 组件</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node fn-blue">lib/apis/</div>
+    <div class="flow-label">REST 请求</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node fn-purple">FastAPI Router</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node fn-green">RAG 检索</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node fn-orange">Ollama / OpenAI</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node fn-teal">流式返回</div>
+  </div>
+
+  <div class="flow-row" style="margin-top:8px;">
+    <div class="flow-node fn-red">📄 文件上传</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node fn-purple">files.py Router</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node fn-green">文档解析 / 向量化</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node fn-teal">向量数据库</div>
+    <div class="flow-label">存储供 RAG 检索</div>
+  </div>
+
+  <div class="flow-row" style="margin-top:8px;">
+    <div class="flow-node fn-teal">🔌 WebSocket</div>
+    <div class="flow-arrow">↔</div>
+    <div class="flow-node fn-purple">socket/</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node fn-blue">前端 Web Worker</div>
+    <div class="flow-label">实时推送 Token 流</div>
+  </div>
+</div>
+
+<!-- ===== 部署方式 ===== -->
+<div class="dataflow">
+  <h2>🐳 部署配置</h2>
+  <div class="deploy-row">
+    <div class="deploy-badge" style="border-color:#3b82f6;color:#60a5fa;background:#1e3a5f;">docker-compose.yaml — 主配置</div>
+    <div class="deploy-badge" style="border-color:#10b981;color:#34d399;background:#1a3a2e;">docker-compose.gpu.yaml — NVIDIA GPU</div>
+    <div class="deploy-badge" style="border-color:#f59e0b;color:#fbbf24;background:#3a2a10;">docker-compose.amdgpu.yaml — AMD GPU</div>
+    <div class="deploy-badge" style="border-color:#8b5cf6;color:#a78bfa;background:#2d1f4e;">docker-compose.api.yaml — API模式</div>
+  </div>
+  <div class="deploy-row">
+    <div class="deploy-badge" style="border-color:#14b8a6;color:#2dd4bf;background:#1a3535;">kubernetes/ — Helm Charts 生产部署</div>
+    <div class="deploy-badge" style="border-color:#475569;color:#94a3b8;background:#1e293b;">Caddyfile.localhost — 本地反代</div>
+    <div class="deploy-badge" style="border-color:#475569;color:#94a3b8;background:#1e293b;">cypress + playwright — E2E 测试</div>
+  </div>
+</div>
+
+</body>
+</html>
